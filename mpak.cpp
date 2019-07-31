@@ -14,6 +14,7 @@ MPAK::~MPAK() {
 
 bool MPAK::open(const char *fname) {
 	FILE *fp;
+	size = util::file_size((char *) fname);
 
 	//Read
 	fp = fopen(fname, "rb");
@@ -29,9 +30,6 @@ bool MPAK::open(const char *fname) {
 		return false;
 	}
 
-	//Get the file size
-	fseek(fp, 0, SEEK_END);
-	size = ftell(fp);
 	rewind(fp);
 
 	//Read the buffer in
@@ -49,6 +47,8 @@ void MPAK::process() {
 	count = *reinterpret_cast<uint32_t*>(&buffer[0x08]);
 	files.resize(count);
 	uint32_t pos;
+	size_t pos_scan;
+	string tmp_dir;
 
 	//Skip to the files...
 	for (int i = 0; i < count; i++) {
@@ -67,8 +67,6 @@ void MPAK::process() {
 	//Set the position to the names
 	pos = 0x10 + (0x0C * count);
 
-	debug_hex_dump(&buffer[pos], 32);
-
 	//Read strings
 	for (int i = 0; i < count; i++) {
 		//Get the name and length.
@@ -76,7 +74,39 @@ void MPAK::process() {
 		files[i].name     =        (const char *) &buffer[pos];
 		files[i].name_len = strlen((const char *) &buffer[pos]);
 
+		//Is there a directory here?
+		tmp_dir = string(files[i].name);
+
+		//"Explode" the directory structure so we can guarantee that we can
+		//recreate the directory tree correctly.
+		while (true) {
+			pos_scan = tmp_dir.rfind('/');
+			if (pos_scan == string::npos)
+				break;
+
+			//Bingo. We have a directory.
+			tmp_dir = tmp_dir.substr(0, pos_scan);
+			directories.insert(tmp_dir);
+		}
+
+		//Go to the next file
 		pos += files[i].name_len + 1;
+	}
+}
+
+void MPAK::dump(const string path) {
+	//If the "path" isn't blank, we can try to make the directory.
+	if (path != "")
+		util::directory_create(path.c_str());
+
+	//Mass-generate Directories
+	for (
+		set<string>::iterator ii = directories.begin();
+		ii != directories.end();
+		ii++
+	) {
+		//Create the directory
+		util::directory_create((path + "/" + *ii).c_str());
 	}
 }
 

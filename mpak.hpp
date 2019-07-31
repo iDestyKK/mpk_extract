@@ -1,14 +1,16 @@
 #ifndef __MPAK_HELPER_HPP__
 #define __MPAK_HELPER_HPP__
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 
 #include <vector>
+#include <set>
+#include <string>
+
+#include "util.hpp"
 
 using namespace std;
 
@@ -30,11 +32,13 @@ class MPAK {
 
 		bool open(const char *);
 		void process();
+		void dump(const string = "");
 
 	private:
 		//Files
 		uint32_t count;
 		vector<DATA> files;
+		set<string> directories;
 
 		//File Buffer
 		long size;

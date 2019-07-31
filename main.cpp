@@ -27,8 +27,8 @@ using namespace std;
 
 int main(int argc, char **argv) {
 	//Argument Check
-	if (argc != 2) {
-		fprintf(stderr, "Usage: %s file.mpk\n", argv[0]);
+	if (argc < 2 || argc > 3) {
+		fprintf(stderr, "Usage: %s file.mpk [directory]\n", argv[0]);
 		return 1;
 	}
 
@@ -43,4 +43,9 @@ int main(int argc, char **argv) {
 
 	//Now then...
 	pak.process();
+
+	if (argc == 2)
+		pak.dump("extract");
+	else
+		pak.dump(string(argv[2]));
 }
