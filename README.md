@@ -5,6 +5,27 @@ MPK (MPAK) is a simple package container that holds files. It offers no
 compression, and is fairly simple to read in a Hex Editor without figuring
 out what all of the values are.
 
+## Usage
+```
+./mpk_extract mpk_file [directory]
+```
+
+If `directory` isn't specified, it will try to make a directory named
+`extract` and dump the files there.
+
+## Compilation
+### Windows (Method 1)
+1. Make a new project
+2. Drag all files in
+3. Add `_CRT_SECURE_NO_WARNINGS` to your **Preprocessor Definitions**.
+4. Compile!
+
+### Windows (Method 2)
+1. Go into the `bin` directory. I'm a nice person, so I compiled it for you.
+
+### Linux
+*Soon... (Look in `util.cpp` for why)*
+
 ## File Format
 MPKs are split into 4 "sections":
 
