@@ -32,13 +32,14 @@ class MPAK {
 
 		bool open(const char *);
 		void process();
-		void dump(const string = "");
+		void dump(const string = ".");
 
 	private:
 		//Files
 		uint32_t count;
 		vector<DATA> files;
 		set<string> directories;
+		size_t longest_len;
 
 		//File Buffer
 		long size;

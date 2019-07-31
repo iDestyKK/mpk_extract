@@ -4,6 +4,7 @@ MPAK::MPAK() {
 	buffer = NULL;
 	size = 0;
 	count = 0;
+	longest_len = 0;
 }
 
 MPAK::~MPAK() {
@@ -74,6 +75,9 @@ void MPAK::process() {
 		files[i].name     =        (const char *) &buffer[pos];
 		files[i].name_len = strlen((const char *) &buffer[pos]);
 
+		if (files[i].name_len > longest_len)
+			longest_len = files[i].name_len;
+
 		//Is there a directory here?
 		tmp_dir = string(files[i].name);
 
@@ -92,21 +96,45 @@ void MPAK::process() {
 		//Go to the next file
 		pos += files[i].name_len + 1;
 	}
+
+	printf(
+		"Found %d files in %d directories.\n",
+		files.size(),
+		directories.size()
+	);
 }
 
 void MPAK::dump(const string path) {
+	set<string>::iterator ii;
+	FILE *fp;
+	string tmp;
+
 	//If the "path" isn't blank, we can try to make the directory.
-	if (path != "")
+	if (path != ".")
 		util::directory_create(path.c_str());
 
 	//Mass-generate Directories
-	for (
-		set<string>::iterator ii = directories.begin();
-		ii != directories.end();
-		ii++
-	) {
-		//Create the directory
-		util::directory_create((path + "/" + *ii).c_str());
+	for (ii = directories.begin(); ii != directories.end(); ii++) {
+		tmp = path + "/" + *ii;
+		printf("Dir : %-*s ", longest_len, ii->c_str());
+		util::directory_create(tmp.c_str());
+
+		printf("[  OK  ]\n");
+	}
+
+	//Dump all files
+	for (int i = 0; i < count; i++) {
+		tmp = path + "/" + string(files[i].name);
+
+		printf("File: %-*s ", longest_len, files[i].name);
+
+		fp = fopen(tmp.c_str(), "wb");
+		fwrite(&buffer[files[i].offset], sizeof(byte), files[i].size, fp);
+		fclose(fp);
+
+		//Just assume it worked
+		//TODO: Don't make that assumption...
+		printf("[  OK  ]\n");
 	}
 }
 
