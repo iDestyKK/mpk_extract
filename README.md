@@ -23,8 +23,8 @@ If `directory` isn't specified, it will try to make a directory named
 ### Windows (Method 2)
 1. Go into the `bin` directory. I'm a nice person, so I compiled it for you.
 
-### Linux
-*Soon... (Look in `util.cpp` for why)*
+### Linux/Mac OS/etc
+1. Run `make`. Simple.
 
 ## File Format
 MPKs are split into 4 "sections":
